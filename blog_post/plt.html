@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    canvas {
+        display: block;
+        margin: auto;
+    }
+    .slider-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="chart-container">
+        <canvas id="myChart1" width="500" height="500"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="myChart2" width="500" height="500"></canvas>
+    </div>
+  </div>
+  
+  <div class="slider-container">
+      <label for="curveSlider">Select Curve (1-20): </label>
+      <input type="range" id="curveSlider" min="1" max="20" value="1">
+      <span id="sliderValue">1</span>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="text/javascript" language="javascript" src="data.js"></script>
+  
+  <script type="text/javascript" language="javascript">
+    const ctx1 = document.getElementById('myChart1');
+    const ctx2 = document.getElementById('myChart2');
+    const slider = document.getElementById("curveSlider");
+    const sliderValueDisplay = document.getElementById("sliderValue");
+
+    const color1 = "rgb(255, 102, 0)";
+    const color2 = "rgb(0, 102, 255)";
+
+    let chart1, chart2;
+    let currentIndex = 1;
+
+    function interpolateData(oldData, newData, steps = 20) {
+        let frames = [];
+        for (let t = 0; t <= steps; t++) {
+            let progress = t / steps;
+            let interpolated = oldData.map((point, i) => ({
+                x: point.x + progress * (newData[i].x - point.x),
+                y: point.y + progress * (newData[i].y - point.y)
+            }));
+            frames.push(interpolated);
+        }
+        return frames;
+    }
+
+    function animateTransition(newIndex) {
+        const oldCurve1 = chart1.data.datasets[0].data;
+        const oldDerivative1 = chart1.data.datasets[1].data;
+        const oldCurve2 = chart2.data.datasets[0].data;
+
+        const newCurve1 = PlotData[newIndex];
+        const newDerivative1 = [
+            { x: (1 - (1 / derivatives[newIndex])) / 2, y: 0 },
+            { x: (1 + (1 / derivatives[newIndex])) / 2, y: 1 }
+        ];
+        const newCurve2 = ExpectedValues[newIndex];
+
+        let curveFrames1 = interpolateData(oldCurve1, newCurve1);
+        let derivativeFrames1 = interpolateData(oldDerivative1, newDerivative1);
+        let curveFrames2 = interpolateData(oldCurve2, newCurve2);
+
+        let frameIndex = 0;
+        function step() {
+            if (frameIndex < curveFrames1.length) {
+                chart1.data.datasets[0].data = curveFrames1[frameIndex];
+                chart1.data.datasets[1].data = derivativeFrames1[frameIndex];
+                chart2.data.datasets[0].data = curveFrames2[frameIndex];
+
+                chart1.update();
+                chart2.update();
+                
+                frameIndex++;
+                requestAnimationFrame(step);
+            } else {
+                chart1.data.datasets[0].data = newCurve1;
+                chart1.data.datasets[1].data = newDerivative1;
+                chart2.data.datasets[0].data = newCurve2;
+
+                chart1.update();
+                chart2.update();
+                currentIndex = newIndex;
+            }
+        }
+        step();
+    }
+
+    function initializeCharts() {
+        chart1 = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: `p1`,
+                        data: PlotData[1],
+                        borderColor: color1
+                    },
+                    {
+                        label: `dp1`,
+                        data: [
+                            { x: (1 - (1 / derivatives[1])) / 2, y: 0 },
+                            { x: (1 + (1 / derivatives[1])) / 2, y: 1 }
+                        ],
+                        borderDash: [5, 5],
+                        borderColor: color1
+                    }
+                ]
+            },
+            options: {
+                animation: false,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        min: 0,
+                        max: 1
+                    },
+                    y: {
+                        type: 'linear',
+                        position: 'bottom',
+                        min: 0,
+                        max: 1
+                    }
+                },
+                elements: {
+                    point: {
+                        radius: 0
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        chart2 = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: `Expected 1`,
+                        data: ExpectedValues[1],
+                        borderColor: color2
+                    }
+                ]
+            },
+            options: {
+                animation: false,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        min: 0,
+                        max: 1
+                    },
+                    y: {
+                        type: 'linear',
+                        position: 'bottom',
+                        min: 0,
+                        max: 35
+                    }
+                },
+                elements: {
+                    point: {
+                        radius: 0
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    slider.addEventListener("input", function () {
+        const newIndex = parseInt(slider.value);
+        if (newIndex !== currentIndex) {
+            sliderValueDisplay.textContent = newIndex;
+            animateTransition(newIndex);
+        }
+    });
+
+    initializeCharts();
+  </script>
+</body>
+</html>
