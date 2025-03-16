@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plot x^x</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="plotCanvas" width="500" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById("plotCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const xs = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
+        const ys = xs.map(x => Math.pow(x, x));
+        
+        const padding = 40;
+        const width = canvas.width - 2 * padding;
+        const height = canvas.height - 2 * padding;
+        
+        const xScale = width / Math.max(...xs);
+        const yScale = height / Math.max(...ys);
+        
+        function transformX(x) {
+            return padding + x * xScale;
+        }
+        
+        function transformY(y) {
+            return canvas.height - padding - y * yScale;
+        }
+        
+        function drawAxes() {
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.stroke();
+        }
+        
+        function plotPoints() {
+            ctx.beginPath();
+            ctx.moveTo(transformX(xs[0]), transformY(ys[0]));
+            for (let i = 1; i < xs.length; i++) {
+                ctx.lineTo(transformX(xs[i]), transformY(ys[i]));
+            }
+            ctx.strokeStyle = "blue";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        drawAxes();
+        plotPoints();
+    </script>
+</body>
+</html>
