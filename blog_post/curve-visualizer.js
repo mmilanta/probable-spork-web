@@ -38,17 +38,16 @@ class CurveVisualizer extends HTMLElement {
       </style>
       <div class="container">
         <div class="chart-container">
-          <canvas id="chart1" width="500" height="500"></canvas>
+          <canvas id="chart1" width="450" height="500"></canvas>
         </div>
         <div class="chart-container">
-          <canvas id="chart2" width="500" height="500"></canvas>
+          <canvas id="chart2" width="450" height="500"></canvas>
         </div>
       </div>
       
       <div class="slider-container">
-        <label for="curveSlider">Select Curve (1-19): </label>
         <input type="range" id="curveSlider" min="1" max="19" value="1">
-        <span id="sliderValue">1</span>
+        <span id="sliderValue">T₁</span>
       </div>
     `;
   }
@@ -58,7 +57,13 @@ class CurveVisualizer extends HTMLElement {
     if (!window.Chart) {
       const script = document.createElement('script');
       script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
-      script.onload = () => this.initializeComponent();
+      script.onload = () => {
+        // Also load the math plugin for Chart.js
+        const mathScript = document.createElement('script');
+        mathScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js';
+        mathScript.onload = () => this.initializeComponent();
+        document.head.appendChild(mathScript);
+      };
       document.head.appendChild(script);
     } else {
       this.initializeComponent();
@@ -87,7 +92,7 @@ class CurveVisualizer extends HTMLElement {
     this.slider.addEventListener("input", () => {
       const newIndex = parseInt(this.slider.value);
       if (newIndex !== this.currentIndex) {
-        this.sliderValueDisplay.textContent = newIndex;
+        this.sliderValueDisplay.textContent = `T${this.getSubscript(newIndex)}`;
         this.animateTransition(newIndex);
       }
     });
@@ -134,6 +139,10 @@ class CurveVisualizer extends HTMLElement {
     ];
     this.charts[1].data.datasets[0].data = this.expectedValues[this.currentIndex];
     
+    // Update title with current index using Unicode subscript
+    this.charts[0].options.plugins.title.text = `P(T${this.getSubscript(this.currentIndex)}, p)`;
+    this.charts[1].options.plugins.title.text = `E(T${this.getSubscript(this.currentIndex)}, p)`;
+    
     // Update charts
     this.charts[0].update();
     this.charts[1].update();
@@ -179,7 +188,11 @@ class CurveVisualizer extends HTMLElement {
             type: 'linear',
             position: 'bottom',
             min: 0,
-            max: 1
+            max: 1,
+            title: {
+              display: true,
+              text: 'p'
+            }
           },
           y: {
             type: 'linear',
@@ -196,6 +209,17 @@ class CurveVisualizer extends HTMLElement {
         plugins: {
           legend: {
             display: false
+          },
+          title: {
+            display: true,
+            text: `P(T${this.getSubscript(this.currentIndex)}, p)`,
+            font: {
+              size: 16
+            },
+            padding: {
+              top: 10,
+              bottom: 10
+            }
           }
         }
       }
@@ -219,7 +243,11 @@ class CurveVisualizer extends HTMLElement {
             type: 'linear',
             position: 'bottom',
             min: 0,
-            max: 1
+            max: 1,
+            title: {
+              display: true,
+              text: 'p'
+            }
           },
           y: {
             type: 'linear',
@@ -236,6 +264,17 @@ class CurveVisualizer extends HTMLElement {
         plugins: {
           legend: {
             display: false
+          },
+          title: {
+            display: true,
+            text: `E(T${this.getSubscript(this.currentIndex)}, p)`,
+            font: {
+              size: 16
+            },
+            padding: {
+              top: 10,
+              bottom: 10
+            }
           }
         }
       }
@@ -288,6 +327,10 @@ class CurveVisualizer extends HTMLElement {
         this.charts[0].data.datasets[1].data = newDerivative1;
         this.charts[1].data.datasets[0].data = newCurve2;
 
+        // Update the titles with the new index using Unicode subscript
+        this.charts[0].options.plugins.title.text = `P(T${this.getSubscript(newIndex)}, p)`;
+        this.charts[1].options.plugins.title.text = `E(T${this.getSubscript(newIndex)}, p)`;
+
         this.charts[0].update();
         this.charts[1].update();
         this.currentIndex = newIndex;
@@ -297,6 +340,16 @@ class CurveVisualizer extends HTMLElement {
     step();
   }
 
+  // Helper method to convert numbers to unicode subscripts
+  getSubscript(number) {
+    const subscripts = {
+      '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄',
+      '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉'
+    };
+    
+    return number.toString().split('').map(digit => subscripts[digit]).join('');
+  }
+  
   // Getters and setters for component properties
   get maxCurves() {
     return parseInt(this.slider.max);
@@ -313,7 +366,7 @@ class CurveVisualizer extends HTMLElement {
   set currentCurve(value) {
     if (value >= 1 && value <= this.maxCurves) {
       this.slider.value = value;
-      this.sliderValueDisplay.textContent = value;
+      this.sliderValueDisplay.textContent = `T${this.getSubscript(value)}`;
       this.animateTransition(value);
     }
   }
