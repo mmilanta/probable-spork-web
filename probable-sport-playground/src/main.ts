@@ -1,7 +1,6 @@
 // main.js
-import { assert } from 'console';
 import { computeGraph } from './compute.ts';
-import { probability, fairness } from './loadAlgo.ts';
+import { probability, fairness, expectedLength } from './loadAlgo.ts';
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM fully loaded and parsed");
@@ -10,11 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const outputTextBox = document.getElementById("output") as HTMLButtonElement;
 
   runButton.addEventListener("click", async () => {
-    console.log("Run button clicked");
+    outputTextBox.value = "running...";
     const result = await computeGraph(inputTextBox.value);
-    console.log("Runned");
-    const prob = fairness(result);
-    console.log(prob);
-    outputTextBox.value = prob?.toString() || "0";
+    const fr = fairness(result);
+    const el = expectedLength(result, 0.5);
+    outputTextBox.value = `Fairness: ${fr}\nExpected Length: ${el}`;;
   });
 });
