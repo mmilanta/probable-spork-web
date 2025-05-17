@@ -1,0 +1,25 @@
+{
+  "name": "probable-spork-web",
+  "version": "1.0.0",
+  "description": "playground for probable spork",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmilanta/probable-spork-web.git"
+  },
+  "author": "Marco Milanta",
+  "license": "ISC",
+  "homepage": "https://github.com/mmilanta/probable-spork-web#readme",
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "pyodide": "^0.27.6"
+  }
+}
