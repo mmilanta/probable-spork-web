@@ -7,6 +7,7 @@ interface WasmAlgo {
 // loadAlgo.ts
 
 export async function loadWasmModule(): Promise<WasmAlgo> {
+  // @ts-expect-error
   const ModuleFactory = (await import('./wasm/algo.js')).default;
   const Module = await ModuleFactory();
 

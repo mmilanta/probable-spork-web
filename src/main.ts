@@ -1,6 +1,6 @@
 // main.js
-import { computeGraph } from './compute.ts';
-import { probability, fairness, expectedLength } from './loadAlgo.ts';
+import { computeGraph } from './compute';
+import { probability, fairness, expectedLength } from './loadAlgo';
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM fully loaded and parsed");

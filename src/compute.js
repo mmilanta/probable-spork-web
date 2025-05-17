@@ -1,4 +1,32 @@
-from enum import Enum
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.computeGraph = computeGraph;
+const pyodide_1 = require("pyodide");
+let pyodideInstance = null;
+function getPyodide() {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!pyodideInstance) {
+            pyodideInstance = yield (0, pyodide_1.loadPyodide)({
+                indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.6/full/" // ✅ use CDN path here
+            });
+            ;
+        }
+        if (pyodideInstance === null) {
+            throw new Error("Pyodide instance is null");
+        }
+        return pyodideInstance;
+    });
+}
+const python_code = `from enum import Enum
 from typing import Any, Iterator, Callable
 from dataclasses import dataclass
 from inspect import signature
@@ -93,27 +121,29 @@ class GameGraph:
             playing_function=playing_function,
             root=root,
         )
-
-
-def run_code(code: str) -> list[int] | str:
-    import sys
-    import io
-    import traceback
-
-    old_stdout = sys.stdout
-    buffer = io.StringIO()
-    sys.stdout = buffer
-
-    loc: dict[str, Any] = {}
-    try:
-        exec(code, globals(), loc)
-
-        play_fn = loc["play_fn"]
-        root = loc["s0"]
-        graph = GameGraph.compute_graph(play_fn, root)
-        return graph._serialize_int()
-    except Exception:
-        traceback.print_exc(file=buffer)
-
-    sys.stdout = old_stdout
-    return buffer.getvalue()
+`;
+function computeGraph(code) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const pyodide = yield getPyodide();
+        try {
+            yield pyodide.runPythonAsync(python_code);
+            yield pyodide.runPythonAsync(code);
+            const play_fnIsDefined = yield pyodide.runPythonAsync(`"play_fn" in globals()`);
+            const s0IsDefined = yield pyodide.runPythonAsync(`"s0" in globals()`);
+            if (!play_fnIsDefined) {
+                throw new Error("Function play_fn is not defined in the provided code.");
+            }
+            if (!s0IsDefined) {
+                throw new Error("Variable s0 is not defined in the provided code.");
+            }
+            const result = yield pyodide.runPythonAsync(`GameGraph.compute_graph(play_fn, s0)._serialize_int()`);
+            console.log(result.toJs());
+            return result.toJs();
+            ;
+        }
+        catch (error) {
+            console.error("Error executing Python code:", error);
+            throw error;
+        }
+    });
+}
