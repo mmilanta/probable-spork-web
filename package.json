@@ -20,7 +20,9 @@
     "vite": "^6.3.5"
   },
   "dependencies": {
+    "@codemirror/lang-python": "^6.2.1",
     "@tailwindcss/vite": "^4.1.7",
+    "codemirror": "^6.0.1",
     "pyodide": "^0.27.6",
     "tailwindcss": "^4.1.7"
   }

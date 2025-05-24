@@ -6,24 +6,13 @@
   <link href="./src/output.css" rel="stylesheet">
 </head>
 <body>
-  <div class="bg-orange-50 min-h-screen">
+  <div class="min-h-screen">
           <!-- Title -->
       <h1 class="font-serif text-4xl">Compute Probabilities</h1>
       <div class="flex">
         <div class="w-1/2">
           <h2 class="font-serif text-2xl">Input</h2>
-          <textarea id="input" class="border font-mono w-full">s0 = (0,0)
-N = 100
-def play_fn(state, next_point: bool):
-    if next_point:
-        state = (state[0] + 1, state[1])
-    else:
-        state = (state[0], state[1] + 1)
-    if state[0] == N:
-        return GameEnd.WIN
-    if state[1] == N:
-        return GameEnd.LOSE
-    return state</textarea>
+          <div id="code_area" class="w-full"></div>
           <button id="run" class="bg-blue-500 hover:bg-blue-700 text-white rounded p-2 mt-2">Run</button>
         </div>
         <div class="w-1/2">
