@@ -73,3 +73,17 @@ export function expectedLength(graph: number[], p: number): number {
   }
   return wasmInterface.expectedLength(graph, [p]);
 }
+export function linspace(start: number, stop: number, gap: number): number[] {
+  const result: number[] = [];
+  for (let i = start; i <= stop; i += gap) {
+    result.push(i);
+  }
+  return result;
+}
+export function probability_parallel(
+  graph: number[],
+  ps: number[],
+): { x: number; y: number; }[] {
+  const ys = ps.map((p) => probability(graph, p));
+  return ys.map((y, i) => ({ x: ps[i], y }));
+}
