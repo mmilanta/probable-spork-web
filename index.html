@@ -3,26 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="./src/output.css" rel="stylesheet">
+  <link href="./src/styles.css" rel="stylesheet">
 </head>
 <body>
   <div class="min-h-screen">
+    <div class="m-10">
           <!-- Title -->
-      <h1 class="font-serif text-4xl">Compute Probabilities</h1>
-      <div class="flex">
-        <div class="w-1/2">
+      <h1 class="font-serif text-5xl mb-5">Compute Probabilities</h1>
+      <div class="flex flex-row">
+        <div class="flex-1">
           <h2 class="font-serif text-2xl">Input</h2>
-          <div id="code_area" class="w-full"></div>
-          <button id="run" class="bg-blue-500 hover:bg-blue-700 text-white rounded p-2 mt-2">Run</button>
+          <div id="code_area" class=""></div>
+          <button id="run" class="bg-red-500 hover:bg-blue-700 text-white rounded p-2 mt-2">Run</button>
         </div>
-        <div class="w-1/2">
+        <div class="flex-none w-128
+        ">
           <h2 class="font-serif text-2xl">Output</h2>
-          <canvas id="output_plot" class="w-full h-full"></canvas>
+          <canvas id="output_plot" class="aspect-1/1"></canvas>
+          <canvas id="" class="aspect-1/1"></canvas>
           <p id="fairness_p"></p>
           <br>
           <p id="expected_length_p"></p>
         </div>
       </div>
+    </div>
   </div>
   <script type="module" src="./src/main.js"></script>
 </body>
