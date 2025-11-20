@@ -10,7 +10,7 @@ import { Chart, registerables} from 'chart.js';
 
 const start_code = `
 s0 = (0,0)
-N = 100
+N = 7
 def play_fn(state, next_point: bool):
     if next_point:
         state = (state[0] + 1, state[1])
@@ -26,10 +26,10 @@ Chart.register(...registerables);
 
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM fully loaded and parsed");
   const runButton = document.getElementById("run") as HTMLButtonElement;
   const inputTextArea = document.getElementById("input") as HTMLTextAreaElement;
   const outputTextArea = document.getElementById("output") as HTMLTextAreaElement;
+  const balanced_p = document.getElementById("balanced_p") as HTMLParagraphElement;
   const fairness_p = document.getElementById("fairness_p") as HTMLParagraphElement;
   const expected_length_p = document.getElementById("expected_length_p") as HTMLParagraphElement;
   const codeArea = new EditorView({
@@ -53,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const ctx_output_plot = document.getElementById('output_plot') as HTMLCanvasElement;
   const ctx_optimality_plot = document.getElementById('optimality_plot') as HTMLCanvasElement;
   const outputPlot = new Chart(ctx_output_plot, {
+
     type: 'line',
     data: {
       datasets: [{
@@ -91,7 +92,11 @@ document.addEventListener("DOMContentLoaded", () => {
             type: 'linear',
             position: 'bottom',
             min: 0,
-            max: 1
+            max: 1,
+            title: {
+              display: true,
+              text: 'P(Match, p)'
+            }
           }
         },
         elements: {
@@ -105,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           title: {
             display: true,
-            text: `Title`,
+            text: `P(Match, p)`,
             font: {
               size: 16
             },
@@ -148,13 +153,17 @@ document.addEventListener("DOMContentLoaded", () => {
             min: 0,
             title: {
               display: true,
-              text: 'p'
+              text: 'F(Match, 0.5)'
             }
           },
           y: {
             type: 'linear',
             position: 'bottom',
             min: 0,
+            title: {
+              display: true,
+              text: 'E(Match, 0.5)'
+            }
           }
         },
         plugins: {
@@ -195,7 +204,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // python eqivalent: optimalityPlot.data.datasets[1].data = [{"x": x, "y": x ** 2} for x in range(0, fr * 1.1, 0.01)]
     optimalityPlot.data.datasets[1].data = linspace(0, 1.5 * fr, 0.01).map(p => ({ x: p, y: p * p }));
-    optimalityPlot.options.scales.x.max = 1.2 * fr;
+    optimalityPlot.options!.scales!.x!.max = 1.2 * fr;
     optimalityPlot.update();
+
+    // copute correct game
+
+    const half_point = Math.floor(ps.length / 2);
+    let error = 0;
+    for (let i = 0; i < half_point; i++) {
+      const x = data[i + 1].y;
+      const y = data[ps.length - 1 - i].y;
+      error += (x + y - 1) ** 2;
+    }
+    const balanced = error < 1e-10;
+    // update fairness and expected length
+    if (balanced) {
+      balanced_p.textContent = `✅ The match is balanced, player 1 has no advantage over player 2`;
+    } else {
+      balanced_p.textContent = `❌ The match is not balanced, player 1 has an advantage over player 2`;
+    }
+    fairness_p.textContent = `Fairness(Match, 0.5): ${fr.toFixed(4)}`;
+    expected_length_p.innerHTML = `Expected Length(Match, 0.5): ${el.toFixed(4)}`;
   });
 });
