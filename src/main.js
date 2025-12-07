@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,15 +7,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 // main.js
-const compute_1 = require("./compute");
-const loadAlgo_1 = require("./loadAlgo");
-const codemirror_1 = require("codemirror");
-const view_1 = require("@codemirror/view");
-const lang_python_1 = require("@codemirror/lang-python");
-require("./styles.css");
-const chart_js_1 = require("chart.js");
+import { computeGraph } from './compute';
+import { linspace, probability_parallel, fairness, expectedLength } from './loadAlgo';
+import { basicSetup } from "codemirror";
+import { EditorView } from "@codemirror/view";
+import { python } from "@codemirror/lang-python";
+import './styles.css';
+import { Chart, registerables } from 'chart.js';
 const start_code = `
 s0 = (0,0)
 N = 7
@@ -31,7 +29,7 @@ def play_fn(state, next_point: bool):
         return GameEnd.LOSE
     return state
 `;
-chart_js_1.Chart.register(...chart_js_1.registerables);
+Chart.register(...registerables);
 document.addEventListener("DOMContentLoaded", () => {
     const runButton = document.getElementById("run");
     const inputTextArea = document.getElementById("input");
@@ -39,10 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const balanced_p = document.getElementById("balanced_p");
     const fairness_p = document.getElementById("fairness_p");
     const expected_length_p = document.getElementById("expected_length_p");
-    const codeArea = new view_1.EditorView({
+    const codeArea = new EditorView({
         doc: start_code,
         parent: document.getElementById("code_area"),
-        extensions: [codemirror_1.basicSetup, (0, lang_python_1.python)()]
+        extensions: [basicSetup, python()]
     });
     var trace1 = {
         x: [0, 0.1, 0.2, .3, .4, .5, .6, .7, .8, .9, 1],
@@ -57,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     var data = [trace1, trace2];
     const ctx_output_plot = document.getElementById('output_plot');
     const ctx_optimality_plot = document.getElementById('optimality_plot');
-    const outputPlot = new chart_js_1.Chart(ctx_output_plot, {
+    const outputPlot = new Chart(ctx_output_plot, {
         type: 'line',
         data: {
             datasets: [{
@@ -126,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     });
-    const optimalityPlot = new chart_js_1.Chart(ctx_optimality_plot, {
+    const optimalityPlot = new Chart(ctx_optimality_plot, {
         data: {
             datasets: [{
                     type: "scatter",
@@ -188,11 +186,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
     runButton.addEventListener("click", () => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield (0, compute_1.computeGraph)(codeArea.state.doc.toString());
-        const fr = (0, loadAlgo_1.fairness)(result);
-        const el = (0, loadAlgo_1.expectedLength)(result, 0.5);
-        const ps = (0, loadAlgo_1.linspace)(0, 1, 0.01);
-        const data = (0, loadAlgo_1.probability_parallel)(result, ps);
+        const result = yield computeGraph(codeArea.state.doc.toString());
+        const fr = fairness(result);
+        const el = expectedLength(result, 0.5);
+        const ps = linspace(0, 1, 0.01);
+        const data = probability_parallel(result, ps);
         outputPlot.data.datasets[0].data = data;
         outputPlot.data.datasets[1].data = [
             { x: 0.5 - (1 / (2 * fr)), y: 0 },
@@ -204,7 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 y: el
             }];
         // python eqivalent: optimalityPlot.data.datasets[1].data = [{"x": x, "y": x ** 2} for x in range(0, fr * 1.1, 0.01)]
-        optimalityPlot.data.datasets[1].data = (0, loadAlgo_1.linspace)(0, 1.5 * fr, 0.01).map(p => ({ x: p, y: p * p }));
+        optimalityPlot.data.datasets[1].data = linspace(0, 1.5 * fr, 0.01).map(p => ({ x: p, y: p * p }));
         optimalityPlot.options.scales.x.max = 1.2 * fr;
         optimalityPlot.update();
         // copute correct game

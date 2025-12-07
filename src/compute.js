@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,14 +7,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.computeGraph = computeGraph;
-const pyodide_1 = require("pyodide");
+import { loadPyodide } from 'pyodide';
 let pyodideInstance = null;
 function getPyodide() {
     return __awaiter(this, void 0, void 0, function* () {
         if (!pyodideInstance) {
-            pyodideInstance = yield (0, pyodide_1.loadPyodide)({
+            pyodideInstance = yield loadPyodide({
                 indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.6/full/" // ✅ use CDN path here
             });
             ;
@@ -122,7 +119,7 @@ class GameGraph:
             root=root,
         )
 `;
-function computeGraph(code) {
+export function computeGraph(code) {
     return __awaiter(this, void 0, void 0, function* () {
         const pyodide = yield getPyodide();
         try {
