@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite'
 
-export default defineConfig({
-  base: '/probable-spork-web/', // Set base path for GitHub Pages
+export default defineConfig(({ command, mode }) => ({
+  // Use '/probable-spork-web/' for GitHub Pages, '/' for local builds
+  base: process.env.VITE_BASE_PATH || '/',
   optimizeDeps: {
     exclude: ['algo.js', 'pyodide'], // Exclude both from optimization
   },
@@ -14,4 +15,4 @@ export default defineConfig({
   plugins: [
     tailwindcss(),
   ],
-});
+}));
