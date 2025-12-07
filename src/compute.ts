@@ -1,15 +1,21 @@
-import { loadPyodide } from 'pyodide';
+let pyodideInstance: any = null;
 
-let pyodideInstance: Awaited<ReturnType<typeof loadPyodide>> | null = null;
-
-async function getPyodide(): Promise<Awaited<ReturnType<typeof loadPyodide>>> {
+async function getPyodide() {
   if (!pyodideInstance) {
-    pyodideInstance = await loadPyodide({
-        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.6/full/"  // ✅ use CDN path here
-    });;
-  }
-  if (pyodideInstance === null) {
-    throw new Error("Pyodide instance is null");
+    // Load Pyodide script dynamically if not already loaded
+    if (!(window as any).loadPyodide) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/pyodide/v0.27.6/full/pyodide.js';
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+    
+    pyodideInstance = await (window as any).loadPyodide({
+      indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.6/full/"
+    });
   }
   return pyodideInstance;
 }

@@ -2,9 +2,13 @@ import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  // ... other config
   optimizeDeps: {
-    exclude: ['algo.js'], // Exclude the WASM module from optimization
+    exclude: ['algo.js', 'pyodide'], // Exclude both from optimization
+  },
+  build: {
+    rollupOptions: {
+      external: ['pyodide'], // Don't bundle pyodide
+    }
   },
   plugins: [
     tailwindcss(),

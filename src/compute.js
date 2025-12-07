@@ -7,18 +7,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { loadPyodide } from 'pyodide';
 let pyodideInstance = null;
 function getPyodide() {
     return __awaiter(this, void 0, void 0, function* () {
         if (!pyodideInstance) {
-            pyodideInstance = yield loadPyodide({
-                indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.6/full/" // ✅ use CDN path here
+            // Load Pyodide script dynamically if not already loaded
+            if (!window.loadPyodide) {
+                yield new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/pyodide/v0.27.6/full/pyodide.js';
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+            }
+            pyodideInstance = yield window.loadPyodide({
+                indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.6/full/"
             });
-            ;
-        }
-        if (pyodideInstance === null) {
-            throw new Error("Pyodide instance is null");
         }
         return pyodideInstance;
     });

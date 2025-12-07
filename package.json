@@ -24,7 +24,6 @@
     "@tailwindcss/vite": "^4.1.7",
     "chart.js": "^4.4.9",
     "codemirror": "^6.0.1",
-    "pyodide": "^0.27.6",
     "tailwindcss": "^4.1.7"
   }
 }
