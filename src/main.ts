@@ -21,19 +21,34 @@ def play_fn(state, next_point: bool):
         return GameEnd.LOSE
     return state
 `
+
+const latex_str = `\\[
+\\begin{align*}
+  \\text{Fairness} \\triangleq \\frac{d}{dp} \\mathcal{P}(\\text{Match}; p) |_{p=0.5} &= FAIRNESS_VALUE \\\\
+  \\text{Expected Length} \\triangleq \\mathbb{E}[\\text{Length} (\\text{Match}) | p=0.5] &= EXPECTED_LENGTH_VALUE \\\\
+  \\frac{\\text{Expected Length}}{\\text{Fairness}^{2}} &= RATIO_VALUE \\geq 1
+\\end{align*}
+\\]
+`;
 Chart.register(...registerables);
+
+async function typesetMath(...elements: Element[]) {
+  const mj = window.MathJax;
+  if (!mj) return;
+  if (mj.startup?.promise) await mj.startup.promise;
+  if (typeof mj.typesetPromise === 'function') {
+    await mj.typesetPromise(elements);
+  }
+}
 
 
 document.addEventListener("DOMContentLoaded", () => {
   const runButton = document.getElementById("run") as HTMLButtonElement;
-  const inputTextArea = document.getElementById("input") as HTMLTextAreaElement;
-  const outputTextArea = document.getElementById("output") as HTMLTextAreaElement;
   const error_p = document.getElementById("error_p") as HTMLParagraphElement;
   const error_div = document.getElementById("error_div") as HTMLDivElement;
   const output_div = document.getElementById("output_div") as HTMLDivElement;
   const balanced_p = document.getElementById("balanced_p") as HTMLParagraphElement;
-  const fairness_p = document.getElementById("fairness_p") as HTMLParagraphElement;
-  const expected_length_p = document.getElementById("expected_length_p") as HTMLParagraphElement;
+  const latex_p = document.getElementById("latex_p") as HTMLParagraphElement;
   const codeArea = new EditorView({
     doc: start_code,
     parent: document.getElementById("code_area") as HTMLDivElement,
@@ -234,11 +249,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const balanced = error < 1e-10;
     // update fairness and expected length
     if (balanced) {
-      balanced_p.textContent = `✅ The match is balanced, player 1 has no advantage over player 2`;
+      balanced_p.textContent = `The match is balanced`;
+      latex_p.innerHTML = latex_str.replace("FAIRNESS_VALUE", fr.toFixed(4)).replace("EXPECTED_LENGTH_VALUE", el.toFixed(4)).replace("RATIO_VALUE", (el / fr / fr).toFixed(4));
+      await typesetMath(latex_p);
     } else {
-      balanced_p.textContent = `❌ The match is not balanced, player 1 has an advantage over player 2`;
+      balanced_p.textContent = `❌ The match is not balanced, the order of players matters`;
+      latex_p.innerHTML = ``;
     }
-    fairness_p.textContent = `Fairness(Match, 0.5): ${fr.toFixed(4)}`;
-    expected_length_p.innerHTML = `Expected Length(Match, 0.5): ${el.toFixed(4)}`;
   });
 });
