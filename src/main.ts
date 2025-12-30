@@ -26,10 +26,29 @@ const latex_str = `\\[
 \\begin{align*}
   \\text{Fairness} \\triangleq \\frac{d}{dp} \\mathcal{P}(\\text{Match}; p) |_{p=0.5} &= FAIRNESS_VALUE \\\\
   \\text{Expected Length} \\triangleq \\mathbb{E}[\\text{Length} (\\text{Match}) | p=0.5] &= EXPECTED_LENGTH_VALUE \\\\
-  \\frac{\\text{Expected Length}}{\\text{Fairness}^{2}} &= RATIO_VALUE \\geq 1
 \\end{align*}
 \\]
 `;
+const conjecture_latex_str = `
+We believe that, for any balanced match, the following bound holds:
+\\[
+  \\text{Expected Length} \\geq \\text{Fairness}^{2}.
+\\]
+This means that there is a lower bound on the expected length of a match, given the fairness.
+`;
+const conjecture_latex_optimal = `In your match, the bound is tight. Making the match optimal according to the conjecture,
+\\[
+EXPECTED_LENGTH_VALUE = FAIRNESS_VALUE_SQUARED.
+\\]`;
+const conjecture_latex_not_optimal = `In your match, the bound is not tight. The match structurecan be improved,
+\\[
+EXPECTED_LENGTH_VALUE > FAIRNESS_VALUE_SQUARED.
+\\]
+`
+const conjecture_latex_counterexample = `You bet the bound! This results invalidates the conjecture.
+\\[
+EXPECTED_LENGTH_VALUE < FAIRNESS_VALUE_SQUARED.
+\\]`
 Chart.register(...registerables);
 
 async function typesetMath(...elements: Element[]) {
@@ -46,9 +65,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const runButton = document.getElementById("run") as HTMLButtonElement;
   const error_p = document.getElementById("error_p") as HTMLParagraphElement;
   const error_div = document.getElementById("error_div") as HTMLDivElement;
+  const result_div = document.getElementById("result_div") as HTMLDivElement;
   const output_div = document.getElementById("output_div") as HTMLDivElement;
   const balanced_p = document.getElementById("balanced_p") as HTMLParagraphElement;
-  const latex_p = document.getElementById("latex_p") as HTMLParagraphElement;
+  const conjecture_p = document.getElementById("conjecture_p") as HTMLParagraphElement;
+  const result_p = document.getElementById("result_p") as HTMLParagraphElement;
   const codeArea = new EditorView({
     doc: start_code,
     parent: document.getElementById("code_area") as HTMLDivElement,
@@ -248,13 +269,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const balanced = error < 1e-10;
     // update fairness and expected length
+    
     if (balanced) {
       balanced_p.textContent = `The match is balanced`;
-      latex_p.innerHTML = latex_str.replace("FAIRNESS_VALUE", fr.toFixed(4)).replace("EXPECTED_LENGTH_VALUE", el.toFixed(4)).replace("RATIO_VALUE", (el / fr / fr).toFixed(4));
-      await typesetMath(latex_p);
+      result_div.classList.remove("hidden");
+      result_p.innerHTML = latex_str.replace("FAIRNESS_VALUE", fr.toFixed(4)).replace("EXPECTED_LENGTH_VALUE", el.toFixed(4));
+      let delta = el - (fr * fr);
+      if (-0.0001 < delta && delta < 0.0001) {
+        delta = 0;
+      }
+      let conjecture_latex_instance = (delta == 0) ? conjecture_latex_optimal : (( delta > 0 ) ? conjecture_latex_not_optimal : conjecture_latex_counterexample);
+
+
+      conjecture_p.innerHTML = conjecture_latex_str + conjecture_latex_instance.replace("EXPECTED_LENGTH_VALUE", el.toFixed(4)).replace("FAIRNESS_VALUE_SQUARED", (fr * fr).toFixed(4));
+      console.log(conjecture_p.innerHTML);
+      await typesetMath(result_p, conjecture_p);
     } else {
       balanced_p.textContent = `❌ The match is not balanced, the order of players matters`;
-      latex_p.innerHTML = ``;
+      result_div.classList.add("hidden");
+      result_p.innerHTML = ``;
+      conjecture_p.innerHTML = ``;
     }
   });
 });
