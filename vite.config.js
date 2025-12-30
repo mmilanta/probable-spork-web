@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite'
+import { resolve } from 'node:path'
 
 export default defineConfig(({ command, mode }) => ({
   // Use relative paths - works for both local and GitHub Pages
@@ -10,6 +11,11 @@ export default defineConfig(({ command, mode }) => ({
   build: {
     rollupOptions: {
       external: ['pyodide'], // Don't bundle pyodide
+      input: {
+        index: resolve(__dirname, 'index.html'),
+        computeProbabilities: resolve(__dirname, 'compute-probabilities/index.html'),
+        optimalTennisMatch: resolve(__dirname, 'optimal-tennis-match/index.html'),
+      },
     }
   },
   plugins: [
