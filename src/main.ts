@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           title: {
             display: true,
-            text: `Title`,
+            text: `Optimality Curve`,
             font: {
               size: 16
             },
@@ -188,7 +188,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   );
   runButton.addEventListener("click", async () => {
+    runButton.textContent = "Running...";
+    output_div.classList.add("hidden");
+    error_div.classList.add("hidden");
     const {result: result, error: errorMessage} = await computeGraphOrError(codeArea.state.doc.toString());
+    runButton.textContent = "Run";
     if (errorMessage) {
       error_p.textContent = errorMessage;
       error_div.classList.remove("hidden");
