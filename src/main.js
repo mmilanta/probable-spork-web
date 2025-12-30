@@ -8,15 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 // main.js
-import { computeGraph } from './compute';
+import { computeGraphOrError } from './compute';
 import { linspace, probability_parallel, fairness, expectedLength } from './loadAlgo';
 import { basicSetup } from "codemirror";
 import { EditorView } from "@codemirror/view";
 import { python } from "@codemirror/lang-python";
 import './styles.css';
 import { Chart, registerables } from 'chart.js';
-const start_code = `
-s0 = (0,0)
+const start_code = `s0 = (0,0)
 N = 7
 def play_fn(state, next_point: bool):
     if next_point:
@@ -34,6 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const runButton = document.getElementById("run");
     const inputTextArea = document.getElementById("input");
     const outputTextArea = document.getElementById("output");
+    const error_p = document.getElementById("error_p");
+    const error_div = document.getElementById("error_div");
+    const output_div = document.getElementById("output_div");
     const balanced_p = document.getElementById("balanced_p");
     const fairness_p = document.getElementById("fairness_p");
     const expected_length_p = document.getElementById("expected_length_p");
@@ -186,7 +188,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
     runButton.addEventListener("click", () => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield computeGraph(codeArea.state.doc.toString());
+        const { result: result, error: errorMessage } = yield computeGraphOrError(codeArea.state.doc.toString());
+        if (errorMessage) {
+            error_p.textContent = errorMessage;
+            error_div.classList.remove("hidden");
+            output_div.classList.add("hidden");
+            return;
+        }
+        else {
+            error_div.classList.add("hidden");
+            output_div.classList.remove("hidden");
+        }
         const fr = fairness(result);
         const el = expectedLength(result, 0.5);
         const ps = linspace(0, 1, 0.01);

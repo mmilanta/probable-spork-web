@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script type="module" crossorigin src="./assets/index-CFy5rH_1.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-B39wyAo3.css">
+  <script type="module" crossorigin src="./assets/index-i9W0iFTm.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-B_j10icv.css">
 </head>
 <body>
   <div class="min-h-screen">
@@ -24,10 +24,16 @@
           <div id="code_area" class=""></div>
           <button id="run" class="bg-red-500 hover:bg-blue-700 text-white rounded p-2 mt-2 font-serif">Run</button>
 
-          <h2 class="font-serif text-2xl">Output</h2>
-          <p id="balanced_p"></p>
-          <p id="fairness_p"></p>
-          <p id="expected_length_p"></p>
+          <div id="error_div" class="hidden">
+            <h2 class="font-serif text-2xl text-red-600">Error</h2>
+            <p id="error_p" class="font-mono whitespace-pre-wrap"></p>
+          </div>
+          <div id="output_div" class="hidden">
+            <h2 class="font-serif text-2xl">Output</h2>
+            <p id="balanced_p"></p>
+            <p id="fairness_p"></p>
+            <p id="expected_length_p"></p>
+          </div>
         </div>
         <div class="flex-none w-128
         ">

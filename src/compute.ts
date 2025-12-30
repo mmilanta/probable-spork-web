@@ -118,9 +118,7 @@ class GameGraph:
 `;
 
 export async function computeGraph(code: string): Promise<Array<number>> {
-  const pyodide = await getPyodide();
-
-  try {
+    const pyodide = await getPyodide()
     await pyodide.runPythonAsync(python_code);
     await pyodide.runPythonAsync(code);
     const play_fnIsDefined = await pyodide.runPythonAsync(`"play_fn" in globals()`);
@@ -134,9 +132,20 @@ export async function computeGraph(code: string): Promise<Array<number>> {
     const result = await pyodide.runPythonAsync(`GameGraph.compute_graph(play_fn, s0)._serialize_int()`);
     console.log(result.toJs());
     return result.toJs();;
+}
 
+export async function computeGraphOrError(code: string): Promise<{result: Array<number>, error: string | null}> {
+  try {
+    const result = await computeGraph(code);
+    return {result, error: null};
   } catch (error) {
-    console.error("Error executing Python code:", error);
-    throw error;
+    if (error instanceof Error) {
+      console.log(`Error executing Python code (instance of Error): ${error.message}`);
+      return {result: [], error: error.message ?? "Unknown error"};
+    }
+    else {
+      console.log(`Error executing Python code (not instance of Error): ${error}`);
+      return {result: [], error: String(error) ?? "Unknown error"};
+    }
   }
 }

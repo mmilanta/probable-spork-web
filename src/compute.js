@@ -127,25 +127,38 @@ class GameGraph:
 export function computeGraph(code) {
     return __awaiter(this, void 0, void 0, function* () {
         const pyodide = yield getPyodide();
+        yield pyodide.runPythonAsync(python_code);
+        yield pyodide.runPythonAsync(code);
+        const play_fnIsDefined = yield pyodide.runPythonAsync(`"play_fn" in globals()`);
+        const s0IsDefined = yield pyodide.runPythonAsync(`"s0" in globals()`);
+        if (!play_fnIsDefined) {
+            throw new Error("Function play_fn is not defined in the provided code.");
+        }
+        if (!s0IsDefined) {
+            throw new Error("Variable s0 is not defined in the provided code.");
+        }
+        const result = yield pyodide.runPythonAsync(`GameGraph.compute_graph(play_fn, s0)._serialize_int()`);
+        console.log(result.toJs());
+        return result.toJs();
+        ;
+    });
+}
+export function computeGraphOrError(code) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a, _b;
         try {
-            yield pyodide.runPythonAsync(python_code);
-            yield pyodide.runPythonAsync(code);
-            const play_fnIsDefined = yield pyodide.runPythonAsync(`"play_fn" in globals()`);
-            const s0IsDefined = yield pyodide.runPythonAsync(`"s0" in globals()`);
-            if (!play_fnIsDefined) {
-                throw new Error("Function play_fn is not defined in the provided code.");
-            }
-            if (!s0IsDefined) {
-                throw new Error("Variable s0 is not defined in the provided code.");
-            }
-            const result = yield pyodide.runPythonAsync(`GameGraph.compute_graph(play_fn, s0)._serialize_int()`);
-            console.log(result.toJs());
-            return result.toJs();
-            ;
+            const result = yield computeGraph(code);
+            return { result, error: null };
         }
         catch (error) {
-            console.error("Error executing Python code:", error);
-            throw error;
+            if (error instanceof Error) {
+                console.log(`Error executing Python code (instance of Error): ${error.message}`);
+                return { result: [], error: (_a = error.message) !== null && _a !== void 0 ? _a : "Unknown error" };
+            }
+            else {
+                console.log(`Error executing Python code (not instance of Error): ${error}`);
+                return { result: [], error: (_b = String(error)) !== null && _b !== void 0 ? _b : "Unknown error" };
+            }
         }
     });
 }

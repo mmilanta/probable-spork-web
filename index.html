@@ -23,10 +23,16 @@
           <div id="code_area" class=""></div>
           <button id="run" class="bg-red-500 hover:bg-blue-700 text-white rounded p-2 mt-2 font-serif">Run</button>
 
-          <h2 class="font-serif text-2xl">Output</h2>
-          <p id="balanced_p"></p>
-          <p id="fairness_p"></p>
-          <p id="expected_length_p"></p>
+          <div id="error_div" class="hidden">
+            <h2 class="font-serif text-2xl text-red-600">Error</h2>
+            <p id="error_p" class="font-mono whitespace-pre-wrap"></p>
+          </div>
+          <div id="output_div" class="hidden">
+            <h2 class="font-serif text-2xl">Output</h2>
+            <p id="balanced_p"></p>
+            <p id="fairness_p"></p>
+            <p id="expected_length_p"></p>
+          </div>
         </div>
         <div class="flex-none w-128
         ">
@@ -37,6 +43,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js"></script>
+  <script type="module" src="./src/main.ts"></script>
 </body>
 </html>

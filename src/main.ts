@@ -1,5 +1,5 @@
 // main.js
-import { computeGraph } from './compute';
+import { computeGraphOrError } from './compute';
 import { linspace, probability_parallel, fairness, expectedLength } from './loadAlgo';
 import {basicSetup} from "codemirror"
 import {EditorView} from "@codemirror/view"
@@ -8,8 +8,7 @@ import './styles.css';
 import { Chart, registerables} from 'chart.js';
 
 
-const start_code = `
-s0 = (0,0)
+const start_code = `s0 = (0,0)
 N = 7
 def play_fn(state, next_point: bool):
     if next_point:
@@ -29,6 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const runButton = document.getElementById("run") as HTMLButtonElement;
   const inputTextArea = document.getElementById("input") as HTMLTextAreaElement;
   const outputTextArea = document.getElementById("output") as HTMLTextAreaElement;
+  const error_p = document.getElementById("error_p") as HTMLParagraphElement;
+  const error_div = document.getElementById("error_div") as HTMLDivElement;
+  const output_div = document.getElementById("output_div") as HTMLDivElement;
   const balanced_p = document.getElementById("balanced_p") as HTMLParagraphElement;
   const fairness_p = document.getElementById("fairness_p") as HTMLParagraphElement;
   const expected_length_p = document.getElementById("expected_length_p") as HTMLParagraphElement;
@@ -186,7 +188,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   );
   runButton.addEventListener("click", async () => {
-    const result = await computeGraph(codeArea.state.doc.toString());
+    const {result: result, error: errorMessage} = await computeGraphOrError(codeArea.state.doc.toString());
+    if (errorMessage) {
+      error_p.textContent = errorMessage;
+      error_div.classList.remove("hidden");
+      output_div.classList.add("hidden");
+      return;
+    }
+    else {
+      error_div.classList.add("hidden");
+      output_div.classList.remove("hidden");
+    }
     const fr = fairness(result);
     const el = expectedLength(result, 0.5);
     const ps = linspace(0, 1, 0.01);
@@ -208,7 +220,6 @@ document.addEventListener("DOMContentLoaded", () => {
     optimalityPlot.update();
 
     // copute correct game
-
     const half_point = Math.floor(ps.length / 2);
     let error = 0;
     for (let i = 0; i < half_point; i++) {
