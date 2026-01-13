@@ -6,6 +6,17 @@
   <link href="/src/styles.css" rel="stylesheet">
 
   <title>Optimal Tennis Match</title>
+
+  <!-- MathJax: render the LaTeX in this article -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      },
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 </head>
 <body>
   <div class="min-h-screen">
@@ -18,9 +29,109 @@
         </nav>
       </div>
 
-      <p class="font-serif text-lg">
-        Placeholder page. This will eventually contain the “optimal tennis match” content and UI.
-      </p>
+      <article class="font-serif text-lg leading-relaxed space-y-6">
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">The Paradox of Federer&apos;s Success</h2>
+          <p>
+            Roger Federer, one of the most successful tennis players in history, once mentioned in a speech that he won
+            only about <strong>54% of the points</strong> he played. This statement appears paradoxical—how can a player
+            with such a slim margin of superiority dominate the sport? The answer lies in the
+            <strong>amplification effect</strong> of match structure, where small advantages compound to create
+            significant outcomes.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">Example of a 2-point tiebreaker</h2>
+          <p>
+            Let&apos;s make a concrete example. Alex is playing against Bob, and Alex has a probability $p$ of beating Bob
+            in a single point. $p = 0.5$ would mean that Alex is just as strong as Bob, $p &gt; 0.5$ that Alex is
+            stronger, and $p &lt; 0.5$ that Bob is stronger.
+          </p>
+          <p>
+            Now we look at a 2-point tiebreaker (which we indicate as $T_2$). I.e. the first player to win two points
+            wins the match. We are interested in the probability of Alex to win this $T_2$. For Alex to win, one of the
+            following must happen:
+          </p>
+          <ul class="list-disc list-outside ml-6 space-y-1">
+            <li>Alex wins the first two points: probability $p^2$.</li>
+            <li>Alex wins the first point, loses the second, but wins the third: probability $p(1-p)p$.</li>
+            <li>Alex loses the first point, but wins the second and third: probability $(1-p)p^2$.</li>
+          </ul>
+          <p>So overall, we have that</p>
+          <p>
+            $$\mathbf{P}(p, T_2) = p^2 + p(1-p)p + (1-p)p^2 = 3p^2 - 2p^3.$$
+          </p>
+          <p>
+            where we define $\mathbf{P}(p, T_2)$ to be the probability of Alex to win $T_2$. Plugging in $p=0.54$ like
+            in Federer case, for a 2-point tiebreaker, we get $\mathbf{P}(0.54, T_2) = 0.559872$. Being the match very
+            short, the amplification is rather small: circa $2\%$. But for longer matches, we can expect to amplify it
+            much more.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">N-point tiebreaker</h2>
+          <p>
+            From here, it is natural to go beyond $T_2$, to $T_3, T_4, \ldots$. Which means tie-breakers with more than
+            2 points. Unfortunately, the math becomes very quickly complex; for this reason, I made a
+            <a class="underline hover:no-underline" href="../compute-probabilities/">website</a>
+            that allows us to compute $\mathbf{P}(p, T)$ for any arbitrary $T$.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">Fairness</h2>
+          <p>
+            It is clear that $T_7$ will be more &quot;fair&quot; than $T_2$, meaning that the stronger player will have
+            more edge. To quantify this &quot;fairness&quot;, we look at the steepness of the line tangent to
+            $\mathbf{P}(p, T)$ at $p = 0.5$. When this line is very steep, it means that a small edge for Alex results
+            in a large advantage. We call this steepness $\mathbf{F}(T)$.
+          </p>
+          <p>
+            Formally, $\mathbf{F}(T)$ is the derivative of $\mathbf{P}(p, T)$ evaluated at $p=0.5$. Intuitively, let
+            $p = 0.5 + \epsilon$ where $\epsilon$ is a small margin. Then, by Taylor series,
+            $\mathbf{P}(0.5 + \epsilon, T) \simeq 0.5 + \mathbf{F}(T)\epsilon$. Thus the margin has been amplified by a
+            factor $\mathbf{F}(T)$.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">Match length</h2>
+          <p>
+            While making a match longer amplifies the advantage of the stronger player, there is a trade-off: matches
+            cannot last forever. Thus we also want to evaluate a match structure $T$ based on how long it takes to play.
+          </p>
+          <p>
+            As many tennis structures can last forever (e.g. with advantages), we evaluate the expected number of points
+            played. We call this $\mathbf{E}(p, T)$.
+          </p>
+          <p>
+            To compute $\mathbf{E}(p, T)$ we can also use the
+            <a class="underline hover:no-underline" href="../compute-probabilities/">website</a>.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">The tradeoff</h2>
+          <p>
+            In figure 3, we plot $\mathbf{E}(0.5, T)$ against $\mathbf{F}(T)$. We can see how matches become more
+            efficient as they become longer. The question that now rises naturally is: how does the real tennis game
+            structure compare?
+          </p>
+          <p>
+            This motivated me to look for game structures which are even more efficient. After some time I found one
+            that is even better than the tennis match structure. My game structure is parametric, and it achieves the
+            bound:
+          </p>
+          <p>$$\mathbf{F}(T) = \mathbf{E}(0.5, T)^2.$$</p>
+          <p>
+            However, I didn&apos;t manage to prove that this is optimal! I challenge anybody to come up with a better
+            solution, or to prove that this is optimal. I am happy to give out a prize of 1000 USD for anybody that
+            manages.
+          </p>
+        </section>
+      </article>
     </div>
   </div>
 </body>
