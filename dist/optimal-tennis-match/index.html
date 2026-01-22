@@ -132,7 +132,7 @@
           <p>
             It is clear that $T_7$ will be more &quot;fair&quot; than $T_2$, meaning that the stronger player will have
             more edge. To quantify this &quot;fairness&quot;, we look at the steepness of the line tangent to
-            $\mathbf{P}(p, T)$ at $p = 0.5$. When this line is very steep, it means that a small edge for Alex results
+            $\mathbf{P}(p, T)$ at $p = 0.5$, this is the dashed line in the left plot of Figure 1. When this line is very steep, it means that a small edge for Alex results
             in a large advantage. We call this steepness $\mathbf{F}(T)$.
           </p>
           <p>
@@ -155,31 +155,12 @@
           </p>
           <p>
             To compute $\mathbf{E}(p, T)$ we can also use the same
-            <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>.
+            <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>. You can visualize the expected length curve on the right of Figure 1.
           </p>
         </section>
 
-        <section class="space-y-3">
-          <h2 class="font-serif text-2xl">The tradeoff</h2>
-          <p>
-            In figure 3, we plot $\mathbf{E}(0.5, T)$ against $\mathbf{F}(T)$. We can see how matches become more
-            efficient as they become longer. The question that now rises naturally is: how does the real tennis game
-            structure compare?
-          </p>
-          <p>
-            This motivated me to look for game structures which are even more efficient. After some time I found one
-            that is even better than the tennis match structure. My game structure is parametric, and it achieves the
-            bound:
-          </p>
-          <p>$$\mathbf{F}(T) = \mathbf{E}(0.5, T)^2.$$</p>
-          <p>
-            However, I didn&apos;t manage to prove that this is optimal! I challenge anybody to come up with a better
-            solution, or to prove that this is optimal. I am happy to give out a prize of 1000 USD for anybody that
-            manages.
-          </p>
-        </section>
 
-        <div class="flex justify-center pb-10">
+        <div class="flex justify-center">
           <div class="flex flex-col items-center gap-6 max-w-full">
             <div id="tradeoff_plot_container" class="relative w-[400px] aspect-square">
               <canvas id="tradeoff_plot" class="absolute inset-0 w-full h-full"></canvas>
@@ -201,6 +182,26 @@
             </p>
           </div>
         </div>
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">The Tradeoff</h2>
+          <p>
+            In Figure 2, we plot $\mathbf{E}(0.5, T)$ against $\mathbf{F}(T)$. We can see how matches become more
+            efficient as they become longer. The question that now rises naturally is: how does the real tennis game
+            structure compare? You can see it as the star in Figure 2. Surprisingly, it lies under the tiebreaker curve, making it more efficient.
+            
+          </p>
+          <p>
+            This motivated me to look for game structures which are even more efficient. After some time I found one
+            that is even better than the tennis match structure. My game structure is parametric, and it achieves the
+            bound:
+          </p>
+          <p>$$\mathbf{F}(T) = \mathbf{E}(0.5, T)^2.$$</p>
+          <p>
+            However, I didn&apos;t manage to prove that this is optimal! I challenge anybody to come up with a better
+            solution, or to prove that this is optimal. I am happy to give out a prize of 1000 USD for anybody that
+            manages.
+          </p>
+        </section>
       </article>
     </div>
   </div>
