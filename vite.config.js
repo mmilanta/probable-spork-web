@@ -13,7 +13,7 @@ export default defineConfig(({ command, mode }) => ({
       external: ['pyodide'], // Don't bundle pyodide
       input: {
         index: resolve(__dirname, 'index.html'),
-        computeProbabilities: resolve(__dirname, 'compute-probabilities/index.html'),
+        probabilityCalculator: resolve(__dirname, 'probability-calculator/index.html'),
         optimalTennisMatch: resolve(__dirname, 'optimal-tennis-match/index.html'),
       },
     }

@@ -1,6 +1,7 @@
 import { Chart, registerables, type ScatterDataPoint } from 'chart.js';
 import { computeGraphOrError } from './compute';
 import { linspace, probability_parallel, fairness, expectedLength as expectedLengthGraph } from './loadAlgo';
+import precomputedPoints from './precomputed-points.json';
 
 Chart.register(...registerables);
 
@@ -41,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const yLabelRight = document.getElementById('tiebreaker_y_label_right') as HTMLDivElement | null;
   const xLabelTradeoff = document.getElementById('tradeoff_x_label') as HTMLDivElement | null;
   const yLabelTradeoff = document.getElementById('tradeoff_y_label') as HTMLDivElement | null;
+  const unreachableLabel = document.getElementById('tradeoff_unreachable_label') as HTMLDivElement | null;
 
   const ps = linspace(0, 1, 0.01);
 
@@ -184,8 +186,8 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
   function makeTradeoffChart(canvas: HTMLCanvasElement) {
-    const xMax = 20;
-    const yMax = 400;
+    const xMax = 12;
+    const yMax = 250;
     const yTickStepSize = 50;
     const xMaxForCurve = Math.min(xMax, Math.sqrt(yMax)); // so y=x^2 stays within the visible y-range
     const curve = linspace(0, xMaxForCurve, 0.1).map((x) => ({ x, y: x * x }));
@@ -205,11 +207,19 @@ document.addEventListener('DOMContentLoaded', () => {
               fill: 'origin',
             },
             {
-              label: 'tradeoff',
+              label: 'Tiebreakers',
               data: [] as ScatterDataPoint[],
               borderColor: 'black',
               backgroundColor: 'black',
-              pointRadius: 3,
+              pointRadius: 1,
+            },
+            {
+              label: 'Official Match',
+              data: [] as ScatterDataPoint[],
+              borderColor: 'black',
+              backgroundColor: 'black',
+              pointRadius: 5,
+              pointStyle: 'star',
             },
           ],
         },
@@ -316,24 +326,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (slider) slider.disabled = false;
 
     if (tradeoffChart) {
-      const points: ScatterDataPoint[] = [];
-      for (let n = 2; n <= 11; n++) {
-        const graph = graphByN.get(n);
-        if (!graph) continue;
-        points.push({
-          x: fairness(graph),
-          y: expectedLengthGraph(graph, 0.5),
-        });
-      }
-      points.push({ x: 10.7343, y: 164.5844 });
-      points.push({ x: 10.7343, y: 164.5844 });
+      // Use precomputed points instead of computing them
+      // Filter out the last two points which are real match data
+      const points: ScatterDataPoint[] = precomputedPoints.slice(0, -2);
+      const realMatches: ScatterDataPoint[] = [
+        { x: 10.7343, y: 164.5844 },
+      ];
       tradeoffChart.data.datasets[1].data = points;
+      tradeoffChart.data.datasets[2].data = realMatches;
       tradeoffChart.update();
     }
 
     if (xLabelTradeoff) xLabelTradeoff.innerHTML = '\\(\\mathbf{F}(T)\\)';
     if (yLabelTradeoff) yLabelTradeoff.innerHTML = '\\(\\mathbf{E}(0.5, T)\\)';
-    const labels = [xLabelTradeoff, yLabelTradeoff].filter(Boolean) as Element[];
+    if (unreachableLabel) unreachableLabel.innerHTML = '\\(\\text{Unreachable Zone}\\)';
+    const labels = [xLabelTradeoff, yLabelTradeoff, unreachableLabel].filter(Boolean) as Element[];
     if (labels.length) void typesetMath(...labels);
   }
 

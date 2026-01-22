@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/src/styles.css" rel="stylesheet">
 
-  <title>Compute Probabilities</title>
+  <title>Probability Calculator</title>
 
   <!-- MathJax: required for rendering the LaTeX injected into #latex_p -->
   <script>
@@ -16,15 +17,12 @@
     };
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-  <script type="module" crossorigin src="../assets/computeProbabilities-BYqhVLAx.js"></script>
-  <link rel="modulepreload" crossorigin href="../assets/chart-DxEMIib0.js">
-  <link rel="stylesheet" crossorigin href="../assets/styles-BuSWZbYY.css">
 </head>
 <body>
   <div class="min-h-screen">
     <div class="m-10">
       <div class="flex flex-row items-baseline justify-between gap-6 mb-6">
-        <h1 class="font-serif text-5xl">Compute Probabilities</h1>
+        <h1 class="font-serif text-5xl">Probability Calculator</h1>
         <nav class="flex flex-row gap-4 font-serif text-sm">
           <a class="underline hover:no-underline" href="../">Home</a>
           <a class="underline hover:no-underline" href="../optimal-tennis-match/">Optimal Tennis Match</a>
@@ -66,6 +64,7 @@
       </div>
     </div>
   </div>
+  <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
 

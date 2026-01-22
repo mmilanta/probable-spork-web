@@ -16,9 +16,9 @@
     };
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-  <script type="module" crossorigin src="../assets/optimalTennisMatch-TXyMo8Eu.js"></script>
+  <script type="module" crossorigin src="../assets/optimalTennisMatch-DJ8y8iXN.js"></script>
   <link rel="modulepreload" crossorigin href="../assets/chart-DxEMIib0.js">
-  <link rel="stylesheet" crossorigin href="../assets/styles-BuSWZbYY.css">
+  <link rel="stylesheet" crossorigin href="../assets/styles-_kgfR26p.css">
 </head>
 <body>
   <div class="min-h-screen flex justify-center">
@@ -27,7 +27,6 @@
         <h1 class="font-serif text-5xl">Optimal Tennis Match</h1>
         <nav class="flex flex-row gap-4 font-serif text-sm">
           <a class="underline hover:no-underline" href="../">Home</a>
-          <a class="underline hover:no-underline" href="../compute-probabilities/">Compute Probabilities</a>
         </nav>
       </div>
 
@@ -77,7 +76,7 @@
           <p>
             From here, it is natural to go beyond $T_2$, to $T_3, T_4, \ldots$. Which means tie-breakers with more than
             2 points. Unfortunately, the math becomes very quickly complex; for this reason, I made a
-            <a class="underline hover:no-underline" href="../compute-probabilities/">website</a>
+            <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>
             that allows us to compute $\mathbf{P}(p, T)$ for any arbitrary $T$.
           </p>
         </section>
@@ -123,6 +122,9 @@
                 value="2"
               />
             </div>
+            <p class="text-center font-serif text-[15px] mt-2">
+              <strong>Figure 1.</strong> Probability $\mathbf{P}(p, T)$ on the left and expected length $\mathbf{E}(p, T)$ on the right for N-point tiebreakers.
+            </p>
           </div>
         </div>
         <section class="space-y-3">
@@ -152,8 +154,8 @@
             played. We call this $\mathbf{E}(p, T)$.
           </p>
           <p>
-            To compute $\mathbf{E}(p, T)$ we can also use the
-            <a class="underline hover:no-underline" href="../compute-probabilities/">website</a>.
+            To compute $\mathbf{E}(p, T)$ we can also use the same
+            <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>.
           </p>
         </section>
 
@@ -178,8 +180,8 @@
         </section>
 
         <div class="flex justify-center pb-10">
-          <div class="flex flex-col items-center gap-6 w-[400px] max-w-full">
-            <div id="tradeoff_plot_container" class="relative w-full aspect-square">
+          <div class="flex flex-col items-center gap-6 max-w-full">
+            <div id="tradeoff_plot_container" class="relative w-[400px] aspect-square">
               <canvas id="tradeoff_plot" class="absolute inset-0 w-full h-full"></canvas>
               <div
                 id="tradeoff_y_label"
@@ -189,7 +191,14 @@
                 id="tradeoff_x_label"
                 class="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-full font-serif text-md whitespace-nowrap pointer-events-none"
               ></div>
+              <div
+                id="tradeoff_unreachable_label"
+                class="absolute left-[55%] top-[82%] font-serif text-md whitespace-nowrap pointer-events-none text-gray-600"
+              ></div>
             </div>
+            <p class="text-center font-serif text-[15px] mt-2">
+              <strong>Figure 2.</strong> Tradeoff between fairness $\mathbf{F}(T)$ and expected match length $\mathbf{E}(0.5, T)$. Dots are tiebreakers of different lengths, and the star represents the official 2 sets tennis match. The Unreachable Zone is the region that we believe no match structure can achieve.
+            </p>
           </div>
         </div>
       </article>
