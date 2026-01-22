@@ -282,7 +282,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
       conjecture_p.innerHTML = conjecture_latex_str + conjecture_latex_instance.replace("EXPECTED_LENGTH_VALUE", el.toFixed(4)).replace("FAIRNESS_VALUE_SQUARED", (fr * fr).toFixed(4));
-      console.log(conjecture_p.innerHTML);
       await typesetMath(result_p, conjecture_p);
     } else {
       balanced_p.textContent = `❌ The match is not balanced, the order of players matters`;

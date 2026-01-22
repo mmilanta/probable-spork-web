@@ -131,6 +131,8 @@ export async function computeGraph(code: string): Promise<Array<number>> {
     }
     const result = await pyodide.runPythonAsync(`GameGraph.compute_graph(play_fn, s0)._serialize_int()`);
     console.log(result.toJs());
+    console.log("MAX", Math.max(...result.toJs()));
+
     return result.toJs();;
 }
 
