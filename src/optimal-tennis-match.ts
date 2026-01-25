@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
           datasets: [
             {
               type: 'line',
-              label: 'y = x^2',
+              label: 'Optimality Bound',
               data: curve as ScatterDataPoint[],
               borderColor: 'rgba(0,0,0,0.45)',
               backgroundColor: 'rgba(0,0,0,0.12)',
@@ -212,6 +212,14 @@ document.addEventListener('DOMContentLoaded', () => {
               borderColor: 'black',
               backgroundColor: 'black',
               pointRadius: 1,
+            },
+            {
+              label: 'Optimal Matches',
+              data: [] as ScatterDataPoint[],
+              borderColor: 'black',
+              backgroundColor: 'black',
+              pointRadius: 3,
+              pointStyle: 'rectRot',
             },
             {
               label: 'Official Match',
@@ -332,8 +340,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const realMatches: ScatterDataPoint[] = [
         { x: 10.7343, y: 164.5844 },
       ];
+      const optimal_points: ScatterDataPoint[] = [];
+      for (let t = 1; t < 16; t++) {
+        optimal_points.push({ x: t, y: t * t });
+      }
       tradeoffChart.data.datasets[1].data = points;
-      tradeoffChart.data.datasets[2].data = realMatches;
+      tradeoffChart.data.datasets[2].data = optimal_points;
+      tradeoffChart.data.datasets[3].data = realMatches;
       tradeoffChart.update();
     }
 
